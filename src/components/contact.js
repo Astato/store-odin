@@ -1,25 +1,23 @@
 const Contact = () => {
-
   const handleSubmit = (e) => {
-  e.preventDefault();
-  }
-
+    e.preventDefault();
+  };
 
   return (
-    <div id='contact-wrapper'>
-      <form id='contact-form' onSubmit={handleSubmit}>
-        <p>Contact us</p>
+    <div id="contact-wrapper">
+      <form id="contact-form" onSubmit={handleSubmit}>
+        <h2>Contact us</h2>
         <label>Full Name: </label>
-        <input type='text'></input>
+        <input type="text"></input>
         <label>Email:</label>
-        <input type='email'></input>
+        <input type="email"></input>
         <label>Confirm Email:</label>
-        <input type='email'></input>
+        <input type="email"></input>
         <label>Tel:</label>
-        <input type='tel'></input>
+        <input type="tel"></input>
         <label>How can we help you?</label>
         <textarea></textarea>
-        <button type='submit' >Send</button>
+        <button type="submit">Send</button>
       </form>
       <div>
         <p>Fashion Trends</p>
@@ -31,7 +29,7 @@ const Contact = () => {
         <p>10:00 AM to 4:00 PM </p>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Contact;

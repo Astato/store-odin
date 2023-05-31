@@ -1,17 +1,38 @@
-import Navbar from './components/navbar';
-import Home from './components/home';
-import Store from './components/store';
-import About from './components/about';
-import Contact from './components/contact';
-import Login from './components/login';
-import Faq from './components/faq';
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import React from "react";
+import Navbar from "./components/navbar";
+import Home from "./components/home";
+import Store from "./components/store";
+import About from "./components/about";
+import Contact from "./components/contact";
+import Login from "./components/login";
+import Faq from "./components/faq";
+
+const Error = () => {
+  return (
+    <div>
+      <h1>Page not Found</h1>
+    </div>
+  );
+};
 
 function App() {
   return (
     <div className="App">
-      <Navbar/>
-      <Store/>
-      <Login/>
+      <BrowserRouter>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/store" element={<Store />} />
+          <Route path="contact" element={<Contact />} />
+          <Route path="login" element={<Login />} />
+          <Route path="faq" element={<Faq />} />
+          <Route path="*" element={<Error />}>
+            {" "}
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }
