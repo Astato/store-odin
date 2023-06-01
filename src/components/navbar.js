@@ -81,7 +81,9 @@ const Navbar = () => {
   return (
     <nav id="navbar">
       {/* <h1> - - - </h1> */}
-      <h2>::::FT</h2>
+      <Link to="/" style={{ textDecoration: "none", color: "white" }}>
+        <h2>::::FT</h2>
+      </Link>
       <div id="search-bar">
         <input type="text"></input>
         <p>search</p>

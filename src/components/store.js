@@ -1,83 +1,137 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
+import {
+  BrowserRouter,
+  Route,
+  Routes,
+  Link,
+  useLocation,
+} from "react-router-dom";
 import IMG from "./test-smarphone-photo.jpg";
-const URL = "https://dummyjson.com/products/categories";
+import data from "./products.json";
 
-const Products = () => {
-  return (
-    <div className="products-card-container">
-      <div className="product-card">
-        <img src={IMG} alt="phone" className="product-image"></img>
-        <p>title1</p>
-        <p>Description</p>
-        <p>$ Price</p>
-        <button className="add-to-cart-btn">Add to cart</button>
-      </div>
-      <div className="product-card">
-        <img src={IMG} alt="phone" className="product-image"></img>
-        <p>title2</p>
-        <p>Description</p>
-        <p>$ Price</p>
-        <button className="add-to-cart-btn">Add to cart</button>
-      </div>
-      <div className="product-card">
-        <img src={IMG} alt="phone" className="product-image"></img>
-        <p>title3</p>
-        <p>Description</p>
-        <p>$ Price</p>
-        <button className="add-to-cart-btn">Add to cart</button>
-      </div>
-      <div className="product-card">
-        <img src={IMG} alt="phone" className="product-image"></img>
-        <p>title4</p>
-        <p>Description</p>
-        <p>$ Price</p>
-        <button className="add-to-cart-btn">Add to cart</button>
-      </div>
-      <div className="product-card">
-        <img src={IMG} alt="phone" className="product-image"></img>
-        <p>title5</p>
-        <p>Description</p>
-        <p>$ Price</p>
-        <button className="add-to-cart-btn">Add to cart</button>
-      </div>
-      <div className="product-card">
-        <img src={IMG} alt="phone" className="product-image"></img>
-        <p>title6</p>
-        <p>Description</p>
-        <p>$ Price</p>
-        <button className="add-to-cart-btn">Add to cart</button>
-      </div>
-      <div className="product-card">
-        <img src={IMG} alt="phone" className="product-image"></img>
-        <p>title7</p>
-        <p>Description</p>
-        <p>$ Price</p>
-        <button className="add-to-cart-btn">Add to cart</button>
-      </div>
-      <div className="product-card">
-        <img src={IMG} alt="phone" className="product-image"></img>
-        <p>title8</p>
-        <p>Description</p>
-        <p>$ Price</p>
-        <button className="add-to-cart-btn">Add to cart</button>
-      </div>
-    </div>
-  );
+const URL = "https://dummyjson.com/products?limit=100";
+
+const filteredProducts = data.products.filter(
+  (element) =>
+    element.category === "fragrances" ||
+    element.category === "skincare" ||
+    element.category === "sunglasses" ||
+    element.category === "tops" ||
+    element.category.match("women") ||
+    element.category.match("men")
+);
+
+const reducer = (state, action) => {
+  if (action.type === "CLICKED") {
+    console.log(action.type);
+    return {
+      ...state,
+      id: action.id,
+      description: "action.description",
+      price: "action.price",
+      img: "action.img",
+      title: "action.title",
+    };
+  }
+  if (action.type === "GOBACK") {
+    return {
+      ...state,
+      id: "",
+      description: "",
+      price: "",
+      img: "",
+      title: "",
+    };
+  }
+  throw new Error("No Matching action");
 };
 
-const Store = () => {
-  const [priceSort, setPriceSort] = useState(20);
+const defaultState = {
+  id: "",
+  description: "",
+  price: "",
+  img: "",
+  title: "",
+};
+
+const Products = (props) => {
+  const [products, dispatch] = useReducer(reducer, defaultState);
+  let location = useLocation();
+  console.log(props.priceSortSlider);
 
   // const getProducts = async () => {
-  //   const response = await fetch(URL)
+  //   const response = await fetch(URL);
   //   const products = await response.json();
-  //   console.log(products)
-  // }
+  //   console.log(products);
+  // };
 
-  // getProducts()
+  // getProducts();
+
+  useEffect(() => {}, [location]);
+
+  if (products.id && location.pathname !== "/store") {
+    return (
+      <div>
+        <Link to={"/store"}>
+          <button onClick={() => dispatch({ type: "GOBACK" })}>GO BACK</button>
+        </Link>
+        This is a test component product page
+      </div>
+    );
+  }
+
   // useEffect(() => {
 
   // },[])
+
+  const handleClick = () => {
+    console.log("click");
+    dispatch({
+      type: "CLICKED",
+      id: "123",
+    });
+  };
+
+  // if (products.id) {
+  //   document.getElementById("sidebar").style.display = "none";
+  //   return <div>this is the product page</div>;
+  // }
+
+  const productCard = filteredProducts.map((element) => {
+    const {
+      id,
+      title,
+      brand,
+      category,
+      description,
+      price,
+      rating,
+      thumbnail,
+    } = {
+      ...element,
+    };
+
+    if (price > props.priceSortSlider) {
+      return;
+    }
+    return (
+      <div className="product-card" onClick={handleClick} key={id}>
+        <Link to={"/store/" + title}>
+          <img src={thumbnail} alt="phone" className="product-image"></img>
+          <p>{title}</p>
+          <p>{description}</p>
+          <p>$ {price}</p>
+          <button className="add-to-cart-btn">Add to cart</button>
+        </Link>
+      </div>
+    );
+  });
+
+  return <div className="products-card-container">{productCard}</div>;
+};
+
+const Store = () => {
+  const [priceSortSlider, setPriceSortSlider] = useState(20);
 
   return (
     <div id="store">
@@ -94,19 +148,20 @@ const Store = () => {
         </ul>
         <ul id="sort-price">
           <p>Sort by Price</p>
-          <p>Up to: $ {priceSort}</p>
+          <p>Up to: $ {priceSortSlider}</p>
           <input
             type="range"
-            min={"0"}
+            min={10}
             max={100}
-            value={priceSort}
+            value={priceSortSlider}
             onChange={(e) => {
-              setPriceSort(e.target.value);
+              setPriceSortSlider(e.target.value);
             }}
           ></input>
         </ul>
       </div>
-      <Products />
+      <Products priceSortSlider={priceSortSlider} />
+      {/* <ProductDescriptionPage /> */}
     </div>
   );
 };

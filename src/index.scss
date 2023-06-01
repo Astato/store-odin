@@ -2,6 +2,8 @@ $main-color: #fffff8;
 $secondary-color: #11150f;
 $terciary-color: #a5875f;
 
+// #655239
+
 
 body {
   margin: 0;
@@ -170,6 +172,7 @@ body {
 .slide-fowards{
   @extend #shopping-cart;
   animation: slidefowards .5s forwards;
+  z-index: 100
 
 }
 
@@ -262,7 +265,7 @@ body {
 
 #store{
   display: grid;
-  grid-template-columns: 15rem auto;
+  grid-template-columns: 15rem auto auto auto;
   width: 100%;
   height: 89%;
   background-color: $main-color;
@@ -282,11 +285,10 @@ body {
 .products-card-container{
   display: grid;
   grid-template-columns: auto auto auto;
-  justify-items: center;
-  align-items: center;
   width: 100%;
   height: 100%;
   margin: auto;
+  gap: 3rem;
   overflow-y: scroll;
   overflow-x: hidden;
 
@@ -439,9 +441,10 @@ body {
   height: 100%;
   margin: 0;
   width: 100%;
-  z-index: 1;
-  background-color: #fffff8;
+  z-index: 100;
+  background-color: $secondary-color;
   overflow-y: auto;
+  color: $main-color;
   h2{
     display: none;
     margin: 0;
@@ -452,22 +455,70 @@ body {
   #link-list {
     display: flex;
     flex-direction: column;
-    text-decoration: none;
-    color: $secondary-color;
-    margin: 0 1rem;
-  }
-  a, li{
-    color: $secondary-color;
-    text-decoration: none;
+    justify-content: center;
+    // align-items: flex-start;
+    // color: $secondary-color;
+    color: $main-color;
+    margin: 0;
+    gap: 1rem;
+    list-style:none;
+    padding: 1rem 0;
+    
+   li{
+      font-size: larger;
+      border: solid $terciary-color 1px;
+      text-indent: .5cm;
+      color: $main-color;
+      text-decoration: none;
+      padding: 1rem 0;
+      font-weight: 600;
+
+      &:hover{
+        background-color: #fffff8;
+        color: $secondary-color;
+      }
+    }
+
   }
   #search-bar{
     display: flex;
+    // justify-content: center;
+    align-items: center;
     width: 100%;
-    margin: 0 1rem;
+    // margin: 1rem 0 1rem 1rem;
+    font-size: large;
+    height: 27px;
+    input{
+      border-radius: 6px;
+      height: 20px;
+      border: solid $terciary-color 1px;
+
+    }    
   }
   
   #categories-container, .subcategory{
     display: none;
+  }
+
+
+  #shopping-cart-wrapper{
+    display: flex;
+    align-items: center;
+  }
+
+  #shopping-cart{
+    margin-top: 3rem;
+    button{
+      background-color:$main-color;
+      border: solid $terciary-color;
+      margin: auto 1rem;
+      border-radius: 10px;
+    }
+    img{
+      width: 2rem;
+      height: auto;
+    }
+
   }
 }
 

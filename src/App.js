@@ -28,6 +28,7 @@ function App() {
           <Route path="contact" element={<Contact />} />
           <Route path="login" element={<Login />} />
           <Route path="faq" element={<Faq />} />
+          <Route path="store/id" element={<Store />}></Route>
           <Route path="*" element={<Error />}>
             {" "}
           </Route>
