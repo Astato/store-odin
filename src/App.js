@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { useContext, createContext, useState } from "react";
 import React from "react";
 import Navbar from "./components/navbar";
 import Home from "./components/home";
@@ -28,10 +29,9 @@ function App() {
           <Route path="contact" element={<Contact />} />
           <Route path="login" element={<Login />} />
           <Route path="faq" element={<Faq />} />
-          <Route path="store/id" element={<Store />}></Route>
-          <Route path="*" element={<Error />}>
-            {" "}
-          </Route>
+          <Route path="store/:category/:title" element={<Store />}></Route>
+          <Route path="/store/:category" element={<Store />}></Route>
+          <Route path="*" element={<Error />}></Route>
         </Routes>
       </BrowserRouter>
     </div>

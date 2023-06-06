@@ -1,28 +1,30 @@
-import { useState } from "react";
+import { createContext, useState } from "react";
 import emptyCartSVG from "../Icons/empty-cart.svg";
 import { Link } from "react-router-dom";
 
 const emptyCart = emptyCartSVG;
 
-const Categories = () => {
+const Categories = (props) => {
   return (
     <div id="categories-wrapper">
-      Store
+      <Link to={"/store"}>Store</Link>
       <div id="categories-container">
-        <div className="category" id="woman">
+        <div className="category">
           Women
           <div className="subcategory">
-            <p>Dresses</p>
-            <p>Shoes</p>
-            <p>Tops</p>
-            <p>Skincare</p>
+            <Link to={"/store/womens-dresses"} id="womens-dresses">
+              Dresses
+            </Link>
+            <Link to={"/store/womens-shoes"}>Shoes</Link>
+            <Link to={"/store/tops"}>Tops</Link>
+            <Link to={"/store/skincare"}>Skincare</Link>
           </div>
         </div>
-        <div className="category" id="men">
+        <div className="category">
           Men
           <div className="subcategory">
-            <p>Shirts</p>
-            <p>Shoes</p>
+            <Link to={"/store/mens-shirts"}>Shirts</Link>
+            <Link to={"/store/mens-shoes"}>Shoes</Link>
           </div>
         </div>
         <div className="category" id="jewelry">
@@ -41,9 +43,11 @@ const Categories = () => {
             <p>Men's Watches</p>
           </div>
         </div>
-        <div className="category" id="perfumes">
-          Perfumes
-        </div>
+        <Link to={"/store/fragrances"}>
+          <div className="category" id="perfumes">
+            Perfumes
+          </div>
+        </Link>
       </div>
     </div>
   );
@@ -52,7 +56,7 @@ const Categories = () => {
 const ShoppingCart = () => {
   const [showCart, setShowCart] = useState("slide-backwards");
 
-  const handleClick = () => {
+  const handleAnimation = () => {
     showCart === "slide-backwards"
       ? setShowCart("slide-fowards")
       : setShowCart("slide-backwards");
@@ -63,7 +67,7 @@ const ShoppingCart = () => {
       <div id="shopping-cart" className={showCart}>
         <button
           id="shopping-cart-btn"
-          onClick={handleClick}
+          onClick={handleAnimation}
           className="slide-fowards"
         >
           <img src={emptyCart} alt="empty-cart"></img>
@@ -77,7 +81,7 @@ const ShoppingCart = () => {
   );
 };
 
-const Navbar = () => {
+const Navbar = (props) => {
   return (
     <nav id="navbar">
       {/* <h1> - - - </h1> */}
@@ -92,11 +96,9 @@ const Navbar = () => {
         <Link to={"/"}>
           <li>Home</li>
         </Link>
-        <Link to={"/store"}>
-          <li>
-            <Categories />
-          </li>
-        </Link>
+        <li>
+          <Categories setNavigationFilter={props.setNavigationFilter} />
+        </li>
         <Link to={"/contact"}>
           <li>Contact</li>
         </Link>
