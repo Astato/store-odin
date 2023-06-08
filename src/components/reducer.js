@@ -1,4 +1,4 @@
-const reducer = (state, action) => {
+export const reducer = (state, action) => {
   if (action.type === "SHOWPRODUCT") {
     return {
       ...state,
@@ -26,5 +26,3 @@ const reducer = (state, action) => {
 
   throw new Error("No Matching action");
 };
-
-export default reducer;

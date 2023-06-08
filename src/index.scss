@@ -20,6 +20,18 @@ body {
   background-color: $secondary-color;
 }
 
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: $secondary-color;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: $terciary-color;
+}
+
 
 
 #navbar{
@@ -174,6 +186,32 @@ body {
         right: -1rem;
         height: 30rem;
         border-radius: 12px 0px 0 12px;
+        #shopping-cart-item-container{
+        overflow: auto;
+        width: 90%;
+        padding: 0 1rem;
+        }
+        #shopping-cart-actions-container{
+          display: flex;
+          width: 100%;
+          justify-content: center;
+          align-items: center;
+          margin: 0 1rem;
+          gap: 1rem; 
+          a, button{
+            color: $secondary-color;
+            text-decoration: none;
+            // padding: .3rem;
+            font-size: medium;
+            background-color: $main-color;
+            border-radius: 6px;
+          }
+          a:hover, button:hover{
+            cursor: pointer;
+            // color: $terciary-color;
+            box-shadow: inset 0 0 3px 3px $terciary-color
+          }
+        }
       }
     }
 }
@@ -275,7 +313,7 @@ body {
 
 #store{
   display: grid;
-  grid-template-columns: 15rem auto auto auto;
+  grid-template-columns: 15rem auto;
   width: 100%;
   height: 89%;
   background-color: $main-color;
@@ -285,13 +323,14 @@ body {
     color: $secondary-color;
     border-right: solid $terciary-color 1px ;
     box-shadow: 1px 0 3px $terciary-color;
-    margin: 0 auto;
+    margin:0 1rem;
     ul{
       list-style: none;
     }
     .sidebar-filter{
       text-decoration: none;
       color: $secondary-color;
+      margin: 1rem 1rem;
       font-size: larger;
       &:hover{
         font-weight: 600;
@@ -313,13 +352,15 @@ body {
 
 .products-card-container{
   display: grid;
-  grid-template-columns: auto auto auto;
+  grid-template-columns: 30% 30% 30%;
   width: 100%;
   height: 100%;
   margin: auto ;
   gap: 1rem;
   overflow-y: scroll;
   overflow-x: hidden;
+  justify-content: center;
+  align-items: center;
 
 
   a{
@@ -333,6 +374,7 @@ body {
     align-items: center;
     justify-content: center;
     width: auto;
+    text-align: center;
     height: auto;
     margin: 2rem ;
     padding: 1rem 3rem;
@@ -342,7 +384,18 @@ body {
       cursor: pointer;
       transform: scale(1.05);
     }
-  
+    
+    button{
+      border-radius: 9px;
+      padding: .5rem;
+      border: none;
+      &:hover{
+        cursor: pointer;
+        color: $terciary-color;
+        // box-shadow:  0 0 0 1px $terciary-color;
+        border: $terciary-color;
+      }
+    }
     
     .product-image{
       width: 150px;
@@ -364,6 +417,7 @@ body {
   height: 89%;
   width: 50%;
   color: $main-color;
+  font-size: larger;
   justify-content: center;
   margin: auto;
   line-height: 1cm;
@@ -419,6 +473,7 @@ body {
   margin-top: 3rem;
   height: 80%;
   overflow-y: auto;
+  font-size: larger;
   ol{
     width: 50%;
     li{
@@ -551,9 +606,33 @@ body {
       height: auto;
     }
 
+    
   }
 }
 
+#shopping-cart-item-container{
+  font-size: medium;
+  height: 100%;
+  width: 100%;
+  .shopping-cart-item{
+    margin: auto ;
+    gap:.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    margin-top: 0;
+  
+    img{
+      width: 50px;
+      height: 50px
+    }
+    button{
+      height: fit-content;
+      width: fit-content
+    }
+  }
+}
 
 
 
@@ -630,3 +709,32 @@ body {
 // }
 /// media width 1430 - 1440 
 
+
+
+#place-order-wrapper{
+ @extend #faq-wrapper;
+ background-color: $main-color;
+ color: $terciary-color;
+align-items: center;
+ margin-top: 0;
+ height: 84%;
+ width: 100%;
+ padding-bottom: 3rem;
+
+form{
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+    margin: auto;
+    input, label, select{
+      font-size: larger;
+      margin-top: 1rem;
+    }
+  }
+  button{
+    width: fit-content;
+    margin:auto;
+    font-size: x-large;
+    margin-top: 2rem;
+  }
+}

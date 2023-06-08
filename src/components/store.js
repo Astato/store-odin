@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useReducer, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import reducer from "./reducer";
+import { reducer } from "./reducer";
 import data from "./products.json";
 
 const URL = "https://dummyjson.com/products?limit=100";
@@ -49,6 +49,44 @@ const Products = (props) => {
     return () => clearTimeout(renderTimeout);
   }, [location]);
 
+  const handleAddToCart = (element) => {
+    const elementToAdd = { ...element }; ///copy elemenet to not modify it object manipulation
+    console.log(props.cartProducts, "cartproducts");
+    if (props.cartProducts.length < 1) {
+      elementToAdd.amount = 1;
+      return props.setCartProducts([...props.cartProducts, elementToAdd]);
+    }
+
+    const checkCart = props.cartProducts.filter((added) => {
+      if (added.title !== elementToAdd.title) {
+        return false;
+      } else {
+        if (!added.amount) {
+          added.amount = 2;
+          added.price *= 2;
+        } else {
+          added.amount += 1;
+          added.price += elementToAdd.price;
+        }
+        return added;
+      }
+    });
+    console.log(" or here?");
+    if (checkCart.length === 0) {
+      return props.setCartProducts([...props.cartProducts, elementToAdd]);
+    } else {
+      return props.setCartProducts((prevCart) => {
+        const updateCart = prevCart.map((item) => {
+          if (item.title === checkCart[0].title) {
+            return Object.assign({}, item, checkCart[0]);
+          }
+          return item;
+        });
+        return updateCart;
+      });
+    }
+  };
+
   ////////////////////////////////////////////////
 
   if (products.id && location.pathname !== "/store") {
@@ -60,7 +98,6 @@ const Products = (props) => {
       dispatch({
         type: "GOBACK",
       });
-      console.log("test");
     }
     if (!location.pathname.includes(title.split(" ").join("-"))) {
       return;
@@ -98,6 +135,7 @@ const Products = (props) => {
           <p>{category}</p>
           <p>{description}</p>
           <p>$ {price}</p>
+          <button onClick={() => handleAddToCart(products)}>ADD TO CART</button>
           <div id="images-container">{imagesComponent}</div>
         </div>
       </div>
@@ -138,36 +176,41 @@ const Products = (props) => {
       return;
     }
     return (
-      <Link
-        to={"/store/" + category + "/" + title.split(" ").join("-")}
-        key={"1" + id}
+      <div
+        className="product-card"
+        onClick={() =>
+          setTimeout(() => {
+            dispatch({
+              type: "SHOWPRODUCT",
+              id: id,
+              title: title,
+              brand: brand,
+              category: category,
+              description: description,
+              images: images,
+              price: price,
+            });
+            props.setStoreId("store-single-product");
+          }, 1000)
+        }
+        key={"2" + id}
       >
-        <div
-          className="product-card"
-          onClick={() =>
-            setTimeout(() => {
-              dispatch({
-                type: "SHOWPRODUCT",
-                id: id,
-                title: title,
-                brand: brand,
-                category: category,
-                description: description,
-                images: images,
-                price: price,
-              });
-              props.setStoreId("store-single-product");
-            }, 1000)
-          }
-          key={"2" + id}
+        <Link
+          to={"/store/" + category + "/" + title.split(" ").join("-")}
+          key={"1" + id}
         >
-          <p>{brand}</p>
+          <p style={{ fontSize: "larger" }}>{brand}</p>
           <img src={thumbnail} alt="phone" className="product-image"></img>
           <p>{description}</p>
           <p>$ {price}</p>
-          <button className="add-to-cart-btn">Add to cart</button>
-        </div>
-      </Link>
+        </Link>
+        <button
+          className="add-to-cart-btn"
+          onClick={() => handleAddToCart(element)}
+        >
+          Add to cart
+        </button>
+      </div>
     );
   });
   let productCount = 0;
@@ -189,6 +232,7 @@ const Products = (props) => {
 
 const SidebarFilter = () => {
   let currentCategory = null;
+
   const itemsCategories = filteredProducts.map((product) => {
     const { category, id } = { ...product };
     if (category === currentCategory) {
@@ -200,16 +244,16 @@ const SidebarFilter = () => {
     }
     return (
       <Link to={"/store/" + category} key={"5" + id}>
-        <li className="sidebar-filter">
+        <div className="sidebar-filter">
           {currentCategory.split("-").join(" ")}
-        </li>
+        </div>
       </Link>
     );
   });
   return <div> {itemsCategories}</div>;
 };
 
-const Store = () => {
+const Store = ({ setCartProducts, cartProducts }) => {
   const [maxPriceSortSlider, setMaxPriceSortSlider] = useState(maxPrice);
   const [minPriceSortSlider, setMinPriceSortSlider] = useState(minPrice);
   const [storeId, setStoreId] = useState("store");
@@ -222,15 +266,20 @@ const Store = () => {
           <option>Order by Highest</option>
           <option>Order by Lowest</option>
         </select> */}
-        <p>Categories</p>
         <Link to={"/store"}>
-          <button>Reset</button>
+          <button style={{ marginTop: "1rem" }}>Reset</button>
         </Link>
-        <ul id="sidebar-categories">
+        <p style={{ fontSize: "larger", borderBottom: "solid gray" }}>
+          Categories
+        </p>
+        <div
+          id="sidebar-categories-filter-container"
+          style={{ borderBottom: "solid gray" }}
+        >
           <SidebarFilter></SidebarFilter>
-        </ul>
-        <ul id="sort-price">
-          <li>
+        </div>
+        <div id="sort-price">
+          <div>
             <p>Sort by Price</p>
             <p>Up to: $ {maxPriceSortSlider}</p>
             <input
@@ -242,8 +291,8 @@ const Store = () => {
                 setMaxPriceSortSlider(e.target.value);
               }}
             ></input>
-          </li>
-          <li>
+          </div>
+          <div>
             <p>More than: ${minPriceSortSlider}</p>
             <input
               type="range"
@@ -254,13 +303,15 @@ const Store = () => {
                 setMinPriceSortSlider(e.target.value);
               }}
             ></input>
-          </li>
-        </ul>
+          </div>
+        </div>
       </div>
       <Products
         maxPriceSortSlider={maxPriceSortSlider}
         minPriceSortSlider={minPriceSortSlider}
         setStoreId={setStoreId}
+        setCartProducts={setCartProducts}
+        cartProducts={cartProducts}
       />
     </div>
   );

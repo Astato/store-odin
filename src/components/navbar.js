@@ -1,10 +1,9 @@
-import { createContext, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import emptyCartSVG from "../Icons/empty-cart.svg";
 import { Link } from "react-router-dom";
-
 const emptyCart = emptyCartSVG;
 
-const Categories = (props) => {
+const Categories = () => {
   return (
     <div id="categories-wrapper">
       <Link to={"/store"}>Store</Link>
@@ -53,8 +52,35 @@ const Categories = (props) => {
   );
 };
 
-const ShoppingCart = () => {
+const ShoppingCart = ({ cartProducts, setCartProducts }) => {
   const [showCart, setShowCart] = useState("slide-backwards");
+  let totalPrice = 0;
+
+  if (cartProducts.length > 0) {
+    for (const item of cartProducts) {
+      totalPrice += item.price;
+    }
+  }
+  const handleDelete = (title) => {
+    setCartProducts((prevCart) => {
+      const deleteItem = prevCart.filter((item) => item.title !== title);
+      return deleteItem;
+    });
+  };
+
+  const products = cartProducts.map((product) => {
+    const { thumbnail, title, price, brand, id, amount } = { ...product };
+    return (
+      <div className="shopping-cart-item" key={id}>
+        <img src={thumbnail} alt={title} />
+        <p>{brand}</p>
+        <p>{title}</p>
+        <p>${price}</p>
+        <p>{amount || 1}U</p>
+        <button onClick={() => handleDelete(title)}>X</button>
+      </div>
+    );
+  });
 
   const handleAnimation = () => {
     showCart === "slide-backwards"
@@ -72,10 +98,14 @@ const ShoppingCart = () => {
         >
           <img src={emptyCart} alt="empty-cart"></img>
         </button>
-        <p>hello</p>
-        <p>hello</p>
-        <button>Place Order</button>
-        <button>Clear Cart</button>
+        <div id="shopping-cart-item-container">{products || " "}</div>
+        <div id="shopping-cart-actions-container">
+          <Link to="/place-order">
+            <button>Place Order</button>
+          </Link>
+          <button onClick={() => setCartProducts([])}>Clear Cart</button>
+          <p>{totalPrice ? "Total: $" + totalPrice : ""}</p>
+        </div>
       </div>
     </div>
   );
@@ -112,7 +142,10 @@ const Navbar = (props) => {
           <li>Login</li>
         </Link>
       </ul>
-      <ShoppingCart />
+      <ShoppingCart
+        cartProducts={props.cartProducts}
+        setCartProducts={props.setCartProducts}
+      />
     </nav>
   );
 };
