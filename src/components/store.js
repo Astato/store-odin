@@ -5,7 +5,7 @@ import data from "./products.json";
 
 const URL = "https://dummyjson.com/products?limit=100";
 
-const filteredProducts = data.products.filter(
+export const filteredProducts = data.products.filter(
   (element) =>
     element.category === "fragrances" ||
     element.category === "skincare" ||
