@@ -1,32 +1,43 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { filteredProducts } from "./store";
 import arrowForwards from "../Icons/arrow_forward.png";
 
 const Home = () => {
   const [currentPosition, setCurrentPosition] = useState(0);
+  const [wrapperWidth, setWrapperWidth] = useState(0);
+  const [isWaitingRight, setIsWaitingRight] = useState(0);
+  const [isWaitingLeft, setIsWaitingLeft] = useState(0);
+  const [autoclick, setAutoclick] = useState(true);
+  const clickTimerRef = useRef(null);
 
   const featuredProducts = filteredProducts.map((product) => {
-    const { brand, stock, thumbnail, discountPercentage, title, price } = {
+    const { brand, stock, thumbnail, discountPercentage, title, price, id } = {
       ...product,
     };
     if (product.discountPercentage > 17) {
       const originalPrice = price / (1 - discountPercentage / 100);
       return (
-        <div className="featured-content-item-container">
-          <div>
+        <div className="featured-content-item-container" key={id}>
+          <div style={{}}>
             <img className="thumbnail" src={thumbnail}></img>
           </div>
           <div className="featured-content-info">
-            <h2>
+            <p className="product-title">
               {brand}, {title}
-            </h2>
-            <p>
-              Before: $ {Math.floor(originalPrice)}
-              <h3>-%{Math.floor(discountPercentage)}</h3>
+            </p>
+            <p className="old-price-title">
+              <span className="discount-percentage-title">
+                -%{discountPercentage.toFixed()}
+              </span>
+              Before: $
+              <span style={{ textDecoration: "line-through" }}>
+                {Math.floor(originalPrice)}
+              </span>
             </p>
 
-            <div>
-              NOW AT ONLY : <p>${price}</p> (Only {stock} units left!!){" "}
+            <div className="offer-title">
+              <p className="new-price-title">NOW: ${price}</p> (Only {stock}{" "}
+              units left!!){" "}
             </div>
           </div>
         </div>
@@ -52,8 +63,8 @@ const Home = () => {
 
   const sliderIndicatior = numberOfProducts.map((Element, index) => {
     return (
-      <li className="slider-position-indicators" id={index}>
-        {" "}
+      <li className="slider-position-indicators" id={index} key={index + "0"}>
+        &nbsp;&nbsp;
       </li>
     );
   });
@@ -64,6 +75,7 @@ const Home = () => {
       return;
     }
     if (side === "left" && currentPosition === 0) {
+      setIsWaitingLeft(99);
       return;
     }
 
@@ -79,12 +91,13 @@ const Home = () => {
 
     if (side === "right") {
       const scrollLength = scrollWidth / sliderChilds + scrollPosition;
-      home.scrollTo({ left: scrollLength, behavior: "smooth" });
+      home.scrollTo({ left: scrollLength - 7, behavior: "smooth" });
       setCurrentPosition((prev) => prev + 1);
     }
     if (side === "left") {
       const scrollLength = scrollWidth / sliderChilds - scrollPosition;
       home.scrollTo({ left: -scrollLength, behavior: "smooth" });
+      setIsWaitingLeft(-1);
       setCurrentPosition((prev) => prev - 1);
     }
     if (!side) {
@@ -107,7 +120,26 @@ const Home = () => {
       const indicator = document.getElementById(currentPosition.toString());
       indicator.style.color = "#a5875f";
     }
-  }, [currentPosition]);
+    setWrapperWidth(numberOfProducts.length * 100 + "%");
+
+    const timer = setTimeout(() => {
+      if (isWaitingLeft < 0) {
+        setIsWaitingLeft(99);
+      } else {
+        setIsWaitingRight(99);
+      }
+    }, 500);
+
+    if (autoclick) {
+      clickTimerRef.current = setTimeout(() => {
+        handleScroll("right");
+      }, 3000);
+    }
+    return () => {
+      clearTimeout(clickTimerRef.current);
+      clearTimeout(timer);
+    };
+  }, [currentPosition, autoclick]);
 
   window.addEventListener("resize", () => {
     handleScroll("");
@@ -117,26 +149,37 @@ const Home = () => {
   ///on hgome lest place some featured products with a nice scrolling and styling
   return (
     <div id="home">
-      <div id="slider-arrows-wrapper">
-        <div className="slider-arrows">
+      <div
+        id="slider-arrows-wrapper"
+        onMouseEnter={() => setAutoclick(false)}
+        onMouseLeave={() => setAutoclick(true)}
+      >
+        <div className="slider-arrows" style={{ zIndex: isWaitingLeft }}>
           <img
             src={arrowForwards}
             alt="prev"
             id="prev-featured-arrow"
-            onMouseUp={() => handleScroll("left")}
+            onMouseUp={() => {
+              handleScroll("left");
+            }}
           ></img>
         </div>
         <div id="slider-element-indicator">{sliderIndicatior}</div>
-        <div className="slider-arrows">
+        <div className="slider-arrows" style={{ zIndex: isWaitingRight }}>
           <img
             src={arrowForwards}
             alt="next"
             id="next-featured-arrow"
-            onMouseUp={() => handleScroll("right")}
+            onMouseUp={() => {
+              handleScroll("right");
+              setIsWaitingRight(-1);
+            }}
           ></img>
         </div>
       </div>
-      <div id="featured-content-wrapper">{featuredProducts}</div>
+      <div id="featured-content-wrapper" style={{ minWidth: wrapperWidth }}>
+        {featuredProducts}
+      </div>
     </div>
   );
 };

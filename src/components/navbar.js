@@ -26,20 +26,16 @@ const Categories = () => {
             <Link to={"/store/mens-shoes"}>Shoes</Link>
           </div>
         </div>
-        <div className="category" id="jewelry">
-          Jewelry
-          <div className="subcategory">
-            <p>Women</p>
-            <p>Men</p>
-          </div>
-        </div>
+        <Link to={"/store/womens-jewellery"} className="category" id="jewelry">
+          Jewellery
+        </Link>
         <div className="category" id="accesories">
           Accesories
           <div className="subcategory">
-            <p>Sunglasses</p>
-            <p>Women's Bags</p>
-            <p>Women's Watches</p>
-            <p>Men's Watches</p>
+            <Link to={"/store/sunglasses"}>Sunglasses</Link>
+            <Link to={"/store/womens-bags"}>Women's Bags</Link>
+            <Link to={"/store/womens-watches"}>Women's Watches</Link>
+            <Link to={"/store/mens-watches"}>Men's Watches</Link>
           </div>
         </div>
         <Link to={"/store/fragrances"}>
@@ -53,7 +49,7 @@ const Categories = () => {
 };
 
 const ShoppingCart = ({ cartProducts, setCartProducts }) => {
-  const [showCart, setShowCart] = useState("slide-backwards");
+  const [showCart, setShowCart] = useState("");
   let totalPrice = 0;
 
   if (cartProducts.length > 0) {
@@ -83,18 +79,20 @@ const ShoppingCart = ({ cartProducts, setCartProducts }) => {
   });
 
   const handleAnimation = () => {
-    showCart === "slide-backwards"
-      ? setShowCart("slide-fowards")
-      : setShowCart("slide-backwards");
+    if (showCart === "" || showCart === "slide-backwards") {
+      setShowCart("slide-forwards");
+    } else {
+      setShowCart("slide-backwards");
+    }
   };
 
   return (
     <div id="shopping-cart-wrapper">
-      <div id="shopping-cart" className={showCart}>
+      <div id="shopping-cart" className={showCart || "hidden"}>
         <button
           id="shopping-cart-btn"
           onClick={handleAnimation}
-          className="slide-fowards"
+          className={showCart || "hidden"}
         >
           <img src={emptyCart} alt="empty-cart"></img>
         </button>
@@ -116,12 +114,9 @@ const Navbar = (props) => {
     <nav id="navbar">
       {/* <h1> - - - </h1> */}
       <Link to="/" style={{ textDecoration: "none", color: "white" }}>
-        <h2>::::FT</h2>
+        <h2>: : : : Fashion Trends</h2>
       </Link>
-      <div id="search-bar">
-        <input type="text"></input>
-        <p>search</p>
-      </div>
+
       <ul id="link-list">
         <Link to={"/"}>
           <li>Home</li>
