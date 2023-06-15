@@ -143,12 +143,15 @@ const Home = () => {
 
   window.addEventListener("resize", () => {
     handleScroll("");
-    document.getElementById("0").style.color = "#a5875f";
+    if (document.getElementById("0")) {
+      document.getElementById("0").style.color = "#a5875f";
+    }
   });
 
   ///on hgome lest place some featured products with a nice scrolling and styling
   return (
     <div id="home">
+      <h1 style={{ color: "white" }}>:::: Fashion Trends</h1>
       <div
         id="slider-arrows-wrapper"
         onMouseEnter={() => setAutoclick(false)}

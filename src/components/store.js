@@ -164,13 +164,6 @@ const Products = (props) => {
     if (categoriesNavigation && categoriesNavigation !== category) {
       return;
     }
-    // if (
-    //   props.showCategory &&
-    //   category !== props.showCategory &&
-    //   location.pathname.includes(props.showCategory)
-    // ) {
-    //   return;
-    // }
 
     if (price > props.maxPriceSortSlider || price < props.minPriceSortSlider) {
       return;
@@ -202,7 +195,17 @@ const Products = (props) => {
           <p style={{ fontSize: "larger" }}>{brand}</p>
           <img src={thumbnail} alt="phone" className="product-image"></img>
           <p>{description}</p>
-          <p>$ {price}</p>
+          <p
+            style={{
+              boxShadow: "0 0 3px 1px gray",
+              width: "fit-content",
+              margin: "1rem auto",
+              padding: ".5rem 1rem",
+              fontSize: "18px",
+            }}
+          >
+            $ {price}
+          </p>
         </Link>
         <button
           className="add-to-cart-btn"
@@ -269,9 +272,7 @@ const Store = ({ setCartProducts, cartProducts }) => {
         <Link to={"/store"}>
           <button style={{ marginTop: "1rem" }}>Reset</button>
         </Link>
-        <p style={{ fontSize: "larger", borderBottom: "solid gray" }}>
-          Categories
-        </p>
+        <p id="categories-title">Categories</p>
         <div
           id="sidebar-categories-filter-container"
           style={{ borderBottom: "solid gray" }}

@@ -1,7 +1,10 @@
 import { useEffect, useReducer, useState } from "react";
 import emptyCartSVG from "../Icons/empty-cart.svg";
+import filledCartSVG from "../Icons/filled-cart.svg";
+import menuIcon from "../Icons/menu_icon.png";
 import { Link } from "react-router-dom";
 const emptyCart = emptyCartSVG;
+const filledCart = filledCartSVG;
 
 const Categories = () => {
   return (
@@ -48,8 +51,10 @@ const Categories = () => {
   );
 };
 
-const ShoppingCart = ({ cartProducts, setCartProducts }) => {
+const ShoppingCart = ({ cartProducts, setCartProducts, isScreenSmall }) => {
   const [showCart, setShowCart] = useState("");
+  const [wrapperStyling, setWrapperStyling] = useState(null);
+  const [cartImg, setCartImg] = useState(emptyCart);
   let totalPrice = 0;
 
   if (cartProducts.length > 0) {
@@ -78,23 +83,79 @@ const ShoppingCart = ({ cartProducts, setCartProducts }) => {
     );
   });
 
+  const showWrapper = {
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
+    width: "100%",
+    position: "absolute",
+    top: "0",
+    left: "0rem",
+    backgroundColor: "black",
+    justifyContent: "space-evenly",
+    zIndex: "99",
+    // marginBottom: "10rem",
+  };
+
+  const hideWrapper = {
+    display: "flex",
+    flexDirection: "column",
+    position: "absolute",
+    top: "0rem",
+    left: "10rem",
+    justifyContent: "space-evenly",
+  };
   const handleAnimation = () => {
-    if (showCart === "" || showCart === "slide-backwards") {
-      setShowCart("slide-forwards");
+    ////slide-upwards hides it, slide-downwards shows it
+    if (!isScreenSmall) {
+      if (showCart === "" || showCart !== "slide-forwards") {
+        setShowCart("slide-forwards");
+      } else {
+        setShowCart("slide-backwards");
+      }
     } else {
-      setShowCart("slide-backwards");
+      if (showCart === "" || showCart !== "mobile-show-cart") {
+        setShowCart("mobile-show-cart");
+        setWrapperStyling(showWrapper);
+      } else {
+        setShowCart("mobile-hide-cart");
+        setWrapperStyling(hideWrapper);
+      }
     }
   };
 
+  useEffect(() => {
+    if (cartProducts.length >= 1) {
+      setCartImg(filledCart);
+    }
+    if (cartProducts.length === 0) {
+      setCartImg(emptyCart);
+    }
+
+    if (isScreenSmall && document.getElementById("shopping-cart")) {
+      const shoppingCart = document.getElementById("shopping-cart");
+      shoppingCart.id = "shopping-cart-mobile";
+      shoppingCart.setAttribute("class", "mobile-hide-cart");
+      setWrapperStyling(hideWrapper);
+    }
+
+    if (!isScreenSmall && document.getElementById("shopping-cart-mobile")) {
+      const shoppingCart = document.getElementById("shopping-cart-mobile");
+      shoppingCart.classList.remove("mobile-show-cart");
+      shoppingCart.id = "shopping-cart";
+      setWrapperStyling(null);
+    }
+  }, [isScreenSmall, cartProducts]);
+
   return (
-    <div id="shopping-cart-wrapper">
+    <div id="shopping-cart-wrapper" style={wrapperStyling}>
       <div id="shopping-cart" className={showCart || "hidden"}>
         <button
           id="shopping-cart-btn"
           onClick={handleAnimation}
           className={showCart || "hidden"}
         >
-          <img src={emptyCart} alt="empty-cart"></img>
+          <img src={cartImg} alt="empty-cart"></img>
         </button>
         <div id="shopping-cart-item-container">{products || " "}</div>
         <div id="shopping-cart-actions-container">
@@ -110,36 +171,72 @@ const ShoppingCart = ({ cartProducts, setCartProducts }) => {
 };
 
 const Navbar = (props) => {
+  const [isScreenSmall, setIsScreenSmall] = useState(false);
+  const [responsiveStyle, setResponsiveStyle] = useState("navbar");
+
+  const handleClick = () => {
+    if (isScreenSmall) {
+      responsiveStyle === "navbar"
+        ? setResponsiveStyle("navbar-menu-active")
+        : setResponsiveStyle("navbar");
+    } else {
+      return;
+    }
+  };
+
+  const handleOpenPage = () => {
+    handleClick();
+  };
+
+  useEffect(() => {
+    if (window.innerWidth < 950) {
+      return setIsScreenSmall(true);
+    }
+  }, []);
+
+  window.addEventListener("resize", () => {
+    if (window.innerWidth < 950) {
+      return setIsScreenSmall(true);
+    } else {
+      return setIsScreenSmall(false);
+    }
+  });
   return (
-    <nav id="navbar">
+    <nav id={responsiveStyle}>
       {/* <h1> - - - </h1> */}
       <Link to="/" style={{ textDecoration: "none", color: "white" }}>
         <h2>: : : : Fashion Trends</h2>
       </Link>
-
+      {isScreenSmall && (
+        <img id="menu-icon" src={menuIcon} onClick={handleClick}></img>
+      )}
       <ul id="link-list">
-        <Link to={"/"}>
+        <Link to={"/"} onClick={handleOpenPage}>
           <li>Home</li>
         </Link>
-        <li>
-          <Categories setNavigationFilter={props.setNavigationFilter} />
+        <li onClick={handleOpenPage}>
+          <Categories
+            setNavigationFilter={props.setNavigationFilter}
+            onClick={handleOpenPage}
+          />
         </li>
-        <Link to={"/contact"}>
+        <Link to={"/contact"} onClick={handleOpenPage}>
           <li>Contact</li>
         </Link>
-        <Link to={"/about"}>
+        <Link to={"/about"} onClick={handleOpenPage}>
           <li>About</li>
         </Link>
-        <Link to={"/faq"}>
+        <Link to={"/faq"} onClick={handleOpenPage}>
           <li>FAQ</li>
         </Link>
-        <Link to={"/login"}>
+        <Link to={"/login"} onClick={handleOpenPage}>
           <li>Login</li>
         </Link>
       </ul>
       <ShoppingCart
         cartProducts={props.cartProducts}
         setCartProducts={props.setCartProducts}
+        isScreenSmall={isScreenSmall}
       />
     </nav>
   );
