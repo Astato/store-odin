@@ -18,7 +18,7 @@ const Home = () => {
       const originalPrice = price / (1 - discountPercentage / 100);
       return (
         <div className="featured-content-item-container" key={id}>
-          <div style={{}}>
+          <div>
             <img className="thumbnail" src={thumbnail}></img>
           </div>
           <div className="featured-content-info">

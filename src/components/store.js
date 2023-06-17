@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useReducer, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { reducer } from "./reducer";
 import data from "./products.json";
@@ -71,7 +71,6 @@ const Products = (props) => {
         return added;
       }
     });
-    console.log(" or here?");
     if (checkCart.length === 0) {
       return props.setCartProducts([...props.cartProducts, elementToAdd]);
     } else {
@@ -103,13 +102,16 @@ const Products = (props) => {
       return;
     }
 
+    let idImgNum = 0;
     const imagesComponent = images.map((image) => {
+      idImgNum++;
       return (
         <img
           src={image}
-          key={"0" + id}
+          key={id + idImgNum.toString()}
+          alt={title}
           onClick={() => setShowImage(image)}
-        ></img>
+        />
       );
     });
 
@@ -129,7 +131,7 @@ const Products = (props) => {
         <div id="product-page">
           <p>{brand}</p>
           <div id="thumbnail-container">
-            <img id="thumbnail" src={showImage || images[1]}></img>
+            <img id="thumbnail" alt={brand} src={showImage || images[1]}></img>
           </div>
           <p>{title}</p>
           <p>{category}</p>
@@ -152,7 +154,6 @@ const Products = (props) => {
       category,
       description,
       price,
-      rating,
       thumbnail,
       images,
     } = {
@@ -162,11 +163,11 @@ const Products = (props) => {
     const categoriesNavigation = location.pathname.split("/")[2];
 
     if (categoriesNavigation && categoriesNavigation !== category) {
-      return;
+      return null;
     }
 
     if (price > props.maxPriceSortSlider || price < props.minPriceSortSlider) {
-      return;
+      return null;
     }
     return (
       <div
@@ -221,6 +222,7 @@ const Products = (props) => {
     if (element) {
       productCount += 1;
     }
+    return productCard;
   });
   if (productCount === 0) {
     return <h1> Sorry, nothing to show...</h1>;
@@ -239,7 +241,7 @@ const SidebarFilter = () => {
   const itemsCategories = filteredProducts.map((product) => {
     const { category, id } = { ...product };
     if (category === currentCategory) {
-      return;
+      return null;
     }
 
     if (category !== currentCategory) {

@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useState } from "react";
 import emptyCartSVG from "../Icons/empty-cart.svg";
 import filledCartSVG from "../Icons/filled-cart.svg";
 import menuIcon from "../Icons/menu_icon.png";
@@ -145,6 +145,7 @@ const ShoppingCart = ({ cartProducts, setCartProducts, isScreenSmall }) => {
       shoppingCart.id = "shopping-cart";
       setWrapperStyling(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isScreenSmall, cartProducts]);
 
   return (
@@ -208,7 +209,7 @@ const Navbar = (props) => {
         <h2>: : : : Fashion Trends</h2>
       </Link>
       {isScreenSmall && (
-        <img id="menu-icon" src={menuIcon} onClick={handleClick}></img>
+        <img id="menu-icon" src={menuIcon} alt="" onClick={handleClick}></img>
       )}
       <ul id="link-list">
         <Link to={"/"} onClick={handleOpenPage}>
