@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { useContext, createContext, useState } from "react";
+import { useContext, createContext, useState, useEffect } from "react";
 import React from "react";
 import Navbar from "./components/navbar";
 import Home from "./components/home";
@@ -8,6 +8,8 @@ import About from "./components/about";
 import Contact from "./components/contact";
 import Login from "./components/login";
 import Faq from "./components/faq";
+
+const URL = "https://dummyjson.com/products?limit=0";
 
 const Error = () => {
   return (
@@ -93,12 +95,44 @@ const PlaceOrder = ({ cartProducts }) => {
 
 function App() {
   const [cartProducts, setCartProducts] = useState([]);
+  const [productsArray, setProductsArray] = useState([]);
+
+  const getProducts = async () => {
+    try {
+      const response = await fetch(URL);
+      const products = await response.json();
+      if (products) {
+        const filter = products.products.filter(
+          (product) =>
+            product.category.match("women") ||
+            product.category.match("men") ||
+            product.category.match("fragrances") ||
+            product.category.match("beauty") ||
+            product.category.match("sunglases") ||
+            product.category.match("top")
+        );
+        if (setProductsArray) {
+          return setProductsArray(filter);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    if (!productsArray || productsArray.length <= 1) {
+      getProducts();
+    }
+  }, []);
+
   return (
     <div className="App">
       <BrowserRouter>
         <Navbar cartProducts={cartProducts} setCartProducts={setCartProducts} />
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home productsArray={productsArray} />} />
           <Route path="/about" element={<About />} />
           <Route
             path="/store"
@@ -106,6 +140,8 @@ function App() {
               <Store
                 setCartProducts={setCartProducts}
                 cartProducts={cartProducts}
+                productsArray={productsArray}
+                setProductsArray={setProductsArray}
               />
             }
           />
@@ -122,6 +158,7 @@ function App() {
               <Store
                 setCartProducts={setCartProducts}
                 cartProducts={cartProducts}
+                productsArray={productsArray}
               />
             }
           ></Route>
@@ -131,6 +168,8 @@ function App() {
               <Store
                 setCartProducts={setCartProducts}
                 cartProducts={cartProducts}
+                productsArray={productsArray}
+                setProductsArray={setProductsArray}
               />
             }
           ></Route>

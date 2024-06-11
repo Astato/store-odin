@@ -1,22 +1,19 @@
 import React, { useEffect, useReducer, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { reducer } from "./reducer";
-import data from "./products.json";
 
-const URL = "https://dummyjson.com/products?limit=100";
-
-export const filteredProducts = data.products.filter(
-  (element) =>
-    element.category === "fragrances" ||
-    element.category === "skincare" ||
-    element.category === "sunglasses" ||
-    element.category === "tops" ||
-    element.category.match("women") ||
-    element.category.match("men")
-);
-
-const maxPrice = Math.max(...filteredProducts.map((product) => product.price));
-const minPrice = Math.min(...filteredProducts.map((product) => product.price));
+export const filteredProducts = (data) => {
+  const filtered = data.filter(
+    (element) =>
+      element.category === "fragrances" ||
+      element.category === "skincare" ||
+      element.category === "sunglasses" ||
+      element.category === "tops" ||
+      element.category.match("women") ||
+      element.category.match("men")
+  );
+  return filtered;
+};
 
 const defaultState = {
   id: "",
@@ -28,36 +25,34 @@ const defaultState = {
   category: "",
 };
 
-const Products = (props) => {
+const Products = ({
+  cartProducts,
+  setCartProducts,
+  setStoreId,
+  minPriceSortSlider,
+  maxPriceSortSlider,
+  productsArray,
+}) => {
   const [products, dispatch] = useReducer(reducer, defaultState);
   const [showImage, setShowImage] = useState(null);
   const [dataRequest, setDataRequest] = useState(false);
   let location = useLocation();
 
-  // const getProducts = async () => {
-  //   const response = await fetch(URL);
-  //   const products = await response.json();
-  //   console.log(products);
-  // };
-
-  // getProducts();
-
   useEffect(() => {
     const renderTimeout = setTimeout(() => {
       setDataRequest(true);
-    }, 1500);
+    }, 2000);
     return () => clearTimeout(renderTimeout);
   }, [location]);
 
   const handleAddToCart = (element) => {
     const elementToAdd = { ...element }; ///copy elemenet to not modify it object manipulation
-    console.log(props.cartProducts, "cartproducts");
-    if (props.cartProducts.length < 1) {
+    if (cartProducts.length < 1) {
       elementToAdd.amount = 1;
-      return props.setCartProducts([...props.cartProducts, elementToAdd]);
+      return setCartProducts([...cartProducts, elementToAdd]);
     }
 
-    const checkCart = props.cartProducts.filter((added) => {
+    const checkCart = cartProducts.filter((added) => {
       if (added.title !== elementToAdd.title) {
         return false;
       } else {
@@ -72,9 +67,9 @@ const Products = (props) => {
       }
     });
     if (checkCart.length === 0) {
-      return props.setCartProducts([...props.cartProducts, elementToAdd]);
+      return setCartProducts([...cartProducts, elementToAdd]);
     } else {
-      return props.setCartProducts((prevCart) => {
+      return setCartProducts((prevCart) => {
         const updateCart = prevCart.map((item) => {
           if (item.title === checkCart[0].title) {
             return Object.assign({}, item, checkCart[0]);
@@ -122,23 +117,31 @@ const Products = (props) => {
           onClick={() => {
             dispatch({ type: "GOBACK" });
             setDataRequest(true);
-            props.setStoreId("store");
+            setStoreId("store");
             setShowImage(null);
           }}
         >
           Return
         </Link>
         <div id="product-page">
-          <p>{brand}</p>
+          <p style={{ fontWeight: "bolder", fontSize: "30px", margin: 0 }}>
+            {brand}
+          </p>
           <div id="thumbnail-container">
-            <img id="thumbnail" alt={brand} src={showImage || images[1]}></img>
+            <img
+              id="thumbnail"
+              alt={brand}
+              src={showImage || images[1] || images[0]}
+            ></img>
           </div>
-          <p>{title}</p>
-          <p>{category}</p>
-          <p>{description}</p>
+          <p style={{ fontWeight: "bolder", fontSize: "20px" }}>{title}</p>
+          <div style={{ maxWidth: "70%" }}>
+            <p>{description}</p>
+          </div>
           <p>$ {price}</p>
           <button onClick={() => handleAddToCart(products)}>ADD TO CART</button>
           <div id="images-container">{imagesComponent}</div>
+          <div className="reviews-contaier"></div>
         </div>
       </div>
     );
@@ -146,7 +149,11 @@ const Products = (props) => {
 
   ////////////////////////////////////////////////
 
-  const productCard = filteredProducts.map((element) => {
+  if (!dataRequest) {
+    return <p>Loading...</p>;
+  }
+
+  const productCard = productsArray.map((element) => {
     const {
       id,
       title,
@@ -159,14 +166,13 @@ const Products = (props) => {
     } = {
       ...element,
     };
-
     const categoriesNavigation = location.pathname.split("/")[2];
 
     if (categoriesNavigation && categoriesNavigation !== category) {
       return null;
     }
 
-    if (price > props.maxPriceSortSlider || price < props.minPriceSortSlider) {
+    if (price > maxPriceSortSlider || price < minPriceSortSlider) {
       return null;
     }
     return (
@@ -184,8 +190,8 @@ const Products = (props) => {
               images: images,
               price: price,
             });
-            props.setStoreId("store-single-product");
-          }, 1000)
+            setStoreId("store-single-product");
+          }, 2000)
         }
         key={"2" + id}
       >
@@ -194,8 +200,8 @@ const Products = (props) => {
           key={"1" + id}
         >
           <p style={{ fontSize: "larger" }}>{brand}</p>
-          <img src={thumbnail} alt="phone" className="product-image"></img>
-          <p>{description}</p>
+          <img src={thumbnail} alt={title} className="product-image"></img>
+          <p>{title}</p>
           <p
             style={{
               boxShadow: "0 0 3px 1px gray",
@@ -233,35 +239,33 @@ const Products = (props) => {
   );
 };
 
-////////////////////////////////////////////////////////////////////////////////////
-
-const SidebarFilter = () => {
-  let currentCategory = null;
-
-  const itemsCategories = filteredProducts.map((product) => {
-    const { category, id } = { ...product };
-    if (category === currentCategory) {
-      return null;
-    }
-
-    if (category !== currentCategory) {
-      currentCategory = category;
-    }
-    return (
-      <Link to={"/store/" + category} key={"5" + id}>
-        <div className="sidebar-filter">
-          {currentCategory.split("-").join(" ")}
-        </div>
-      </Link>
-    );
-  });
-  return <div> {itemsCategories}</div>;
-};
-
-const Store = ({ setCartProducts, cartProducts }) => {
-  const [maxPriceSortSlider, setMaxPriceSortSlider] = useState(maxPrice);
-  const [minPriceSortSlider, setMinPriceSortSlider] = useState(minPrice);
+const Store = ({
+  setCartProducts,
+  cartProducts,
+  setProductsArray,
+  productsArray,
+}) => {
+  const [maxPriceSortSlider, setMaxPriceSortSlider] = useState(0);
+  const [minPriceSortSlider, setMinPriceSortSlider] = useState(0);
   const [storeId, setStoreId] = useState("store");
+  const currentCategory = new Set();
+  const [maxPrice, setMaxPrice] = useState(0);
+  const [minPrice, setMinPrice] = useState(0);
+
+  useEffect(() => {
+    if (productsArray) {
+      const getMaxPrice = Math.max(
+        ...productsArray.map((product) => product.price)
+      );
+      const getMinPrice = Math.min(
+        ...productsArray.map((product) => product.price)
+      );
+      setMaxPriceSortSlider(getMaxPrice);
+      setMinPriceSortSlider(getMinPrice);
+      setMaxPrice(getMaxPrice);
+      setMinPrice(getMinPrice);
+    }
+  }, [productsArray]);
 
   return (
     <div id={storeId}>
@@ -279,39 +283,59 @@ const Store = ({ setCartProducts, cartProducts }) => {
           id="sidebar-categories-filter-container"
           style={{ borderBottom: "solid gray" }}
         >
-          <SidebarFilter></SidebarFilter>
+          {productsArray.map((product, index) => {
+            const { category } = { ...product };
+            if (currentCategory.has(category)) {
+              return null;
+            } else {
+              currentCategory.add(category);
+              return (
+                <Link key={index} to={"/store/" + category}>
+                  <div className="sidebar-filter">
+                    {category.split("-")[0]
+                      ? category.split("-").map((string) => string)
+                      : category}
+                  </div>
+                </Link>
+              );
+            }
+          })}
         </div>
-        <div id="sort-price">
-          <div>
-            <p>Sort by Price</p>
-            <p>Up to: $ {maxPriceSortSlider}</p>
-            <input
-              type="range"
-              min={minPriceSortSlider}
-              max={maxPrice}
-              value={maxPriceSortSlider}
-              onChange={(e) => {
-                setMaxPriceSortSlider(e.target.value);
-              }}
-            ></input>
+        {maxPriceSortSlider > 0 && maxPrice > 0 && (
+          <div id="sort-price">
+            <div>
+              <p>Sort by Price</p>
+              <p>Up to: $ {maxPriceSortSlider}</p>
+              <input
+                type="range"
+                min={minPrice}
+                max={maxPrice}
+                value={maxPriceSortSlider}
+                onChange={(e) => {
+                  setMaxPriceSortSlider(e.target.value);
+                }}
+              ></input>
+            </div>
+            <div>
+              <p>More than: ${minPriceSortSlider}</p>
+              <input
+                type="range"
+                min={minPrice}
+                max={maxPrice}
+                value={minPriceSortSlider}
+                onChange={(e) => {
+                  setMinPriceSortSlider(e.target.value);
+                }}
+              ></input>
+            </div>
           </div>
-          <div>
-            <p>More than: ${minPriceSortSlider}</p>
-            <input
-              type="range"
-              min={minPrice}
-              max={maxPriceSortSlider}
-              value={minPriceSortSlider}
-              onChange={(e) => {
-                setMinPriceSortSlider(e.target.value);
-              }}
-            ></input>
-          </div>
-        </div>
+        )}
       </div>
       <Products
         maxPriceSortSlider={maxPriceSortSlider}
         minPriceSortSlider={minPriceSortSlider}
+        setProductsArray={setProductsArray}
+        productsArray={productsArray}
         setStoreId={setStoreId}
         setCartProducts={setCartProducts}
         cartProducts={cartProducts}

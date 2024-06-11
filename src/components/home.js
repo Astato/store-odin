@@ -2,15 +2,14 @@ import React, { useEffect, useRef, useState } from "react";
 import { filteredProducts } from "./store";
 import arrowForwards from "../Icons/arrow_forward.png";
 
-const Home = () => {
+const Home = ({ productsArray }) => {
   const [currentPosition, setCurrentPosition] = useState(0);
-  const [wrapperWidth, setWrapperWidth] = useState(0);
   const [isWaitingRight, setIsWaitingRight] = useState(0);
   const [isWaitingLeft, setIsWaitingLeft] = useState(0);
   const [autoclick, setAutoclick] = useState(true);
   const clickTimerRef = useRef(null);
 
-  const featuredProducts = filteredProducts.map((product) => {
+  const featuredProducts = filteredProducts(productsArray).map((product) => {
     const { brand, stock, thumbnail, discountPercentage, title, price, id } = {
       ...product,
     };
@@ -18,7 +17,12 @@ const Home = () => {
       const originalPrice = price / (1 - discountPercentage / 100);
       return (
         <div className="featured-content-item-container" key={id}>
-          <div>
+          <div
+            style={{
+              height: "100%",
+              display: "grid",
+            }}
+          >
             <img className="thumbnail" src={thumbnail}></img>
           </div>
           <div className="featured-content-info">
@@ -120,7 +124,6 @@ const Home = () => {
       const indicator = document.getElementById(currentPosition.toString());
       indicator.style.color = "#a5875f";
     }
-    setWrapperWidth(numberOfProducts.length * 100 + "%");
 
     const timer = setTimeout(() => {
       if (isWaitingLeft < 0) {
@@ -133,7 +136,7 @@ const Home = () => {
     if (autoclick) {
       clickTimerRef.current = setTimeout(() => {
         handleScroll("right");
-      }, 3000);
+      }, 5000);
     }
     return () => {
       clearTimeout(clickTimerRef.current);
@@ -150,8 +153,8 @@ const Home = () => {
 
   ///on hgome lest place some featured products with a nice scrolling and styling
   return (
-    <div id="home">
-      <h1 style={{ color: "white" }}>:::: Fashion Trends</h1>
+    <div id="home" style={{ borderRadius: "18px" }}>
+      {/* <h1 style={{ color: "white" }}>:::: Fashion Trends</h1> */}
       <div
         id="slider-arrows-wrapper"
         onMouseEnter={() => setAutoclick(false)}
@@ -180,7 +183,13 @@ const Home = () => {
           ></img>
         </div>
       </div>
-      <div id="featured-content-wrapper" style={{ minWidth: wrapperWidth }}>
+      <div
+        id="featured-content-wrapper"
+        style={{
+          minWidth: numberOfProducts.length * 100 + "%",
+          lineBreak: "anywhere",
+        }}
+      >
         {featuredProducts}
       </div>
     </div>

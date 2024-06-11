@@ -70,10 +70,10 @@ const ShoppingCart = ({ cartProducts, setCartProducts, isScreenSmall }) => {
   };
 
   const products = cartProducts.map((product) => {
-    const { thumbnail, title, price, brand, id, amount } = { ...product };
+    const { images, title, price, brand, id, amount } = { ...product };
     return (
       <div className="shopping-cart-item" key={id}>
-        <img src={thumbnail} alt={title} />
+        <img src={images[0]} alt={title} />
         <p>{brand}</p>
         <p>{title}</p>
         <p>${price}</p>
