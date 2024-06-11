@@ -1,5 +1,5 @@
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { useContext, createContext, useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState, useEffect } from "react";
 import React from "react";
 import Navbar from "./components/navbar";
 import Home from "./components/home";

@@ -94,7 +94,6 @@ const ShoppingCart = ({ cartProducts, setCartProducts, isScreenSmall }) => {
     backgroundColor: "black",
     justifyContent: "space-evenly",
     zIndex: "99",
-    // marginBottom: "10rem",
   };
 
   const hideWrapper = {
@@ -145,7 +144,6 @@ const ShoppingCart = ({ cartProducts, setCartProducts, isScreenSmall }) => {
       shoppingCart.id = "shopping-cart";
       setWrapperStyling(null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isScreenSmall, cartProducts]);
 
   return (

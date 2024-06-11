@@ -81,8 +81,6 @@ const Products = ({
     }
   };
 
-  ////////////////////////////////////////////////
-
   if (products.id && location.pathname !== "/store") {
     const { id, title, brand, description, price, images, category } = {
       ...products,
@@ -146,8 +144,6 @@ const Products = ({
       </div>
     );
   }
-
-  ////////////////////////////////////////////////
 
   if (!dataRequest) {
     return <p>Loading...</p>;
